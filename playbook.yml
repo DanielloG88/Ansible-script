@@ -50,7 +50,7 @@
       register: remove_result
       # Remove the copied programs from Windows hosts
 
-    - name: Configure buildAgent.properties
+    - name: Configure conf.ini from the example.j2
       win_template:
         src: ./example.j2
         dest: C:\\Temp\\conf.ini
