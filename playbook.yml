@@ -1,0 +1,61 @@
+- name: Install Programs on Windows
+  hosts: windows_hosts
+  gather_facts: true
+
+  vars:
+    ansible_remote_tmp: C:/Temp/ansible
+    programs:
+      - { src: "/path/to/source/file1.exe", dest: "C:\\Temp\\file1.exe" }
+      - { src: "/path/to/source/file2.exe", dest: "C:\\Temp\\file2.exe" }
+      # Add more programs as needed
+
+  tasks:
+    - name: Get hostname
+      win_shell: hostname
+      register: hostname_result
+
+    - name: Display hostname
+      debug:
+        msg: "Hostname: {{ hostname_result.stdout }}"
+      # Display the Windows hostname
+
+    - name: Copy Programs
+      win_copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        remote_src: false
+      loop: "{{ programs }}"
+      register: copy_result
+      # Copy specified programs to Windows hosts
+
+    - name: Report Copy Status
+      debug:
+        msg: "Copy of '{{ item.item.src }}' to '{{ item.item.dest }}' succeeded"
+      loop: "{{ copy_result.results }}"
+      # Report the status of program copying
+
+    # Add tasks for program installation here with appropriate comments
+
+    - name: Remove Programs
+      win_file:
+        path: "{{ item.dest }}"
+        state: absent
+      loop: "{{ programs }}"
+      loop_control:
+        loop_var: program
+      when: program.dest is defined
+      register: remove_result
+      # Remove the copied programs from Windows hosts
+
+    # Add more tasks as needed with appropriate comments
+
+    - name: Run Generic Configuration Task
+      win_template:
+        src: "{{ template_src }}"
+        dest: "{{ template_dest }}"
+      vars:
+        template_src: "./path/to/generic_template.j2"
+        template_dest: "C:/path/to/destination/file"
+      # Run a generic configuration task using a Jinja2 template
+
+    # Add more generic tasks as needed with appropriate comments
