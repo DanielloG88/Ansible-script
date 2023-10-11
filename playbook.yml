@@ -3,6 +3,9 @@
   gather_facts: true
 
   vars:
+    configs:
+      - config1: '10'
+        port: '8080'
     ansible_remote_tmp: C:/Temp/ansible
     programs:
       - { src: "/path/to/source/file1.exe", dest: "C:\\Temp\\file1.exe" }
@@ -47,7 +50,14 @@
       register: remove_result
       # Remove the copied programs from Windows hosts
 
-    # Add more tasks as needed with appropriate comments
+    - name: Configure buildAgent.properties
+      win_template:
+        src: ./example.j2
+        dest: C:\\Temp\\conf.ini
+      vars:
+        config1: "{{ configs[0].config1 }}"
+        port: "{{ configs[0].port }}"
+        # Customize the variables as needed
 
     - name: Run Generic Configuration Task
       win_template:
